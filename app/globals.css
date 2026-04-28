@@ -1,26 +1,391 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ─── Design Tokens — Dark (default) ───────────────────────────────────────── */
+:root,
+[data-theme="dark"] {
+  --bg: #080806;
+  --bg-surface: #0e0d0a;
+  --bg-card: #131109;
+  --bg-card-hover: #171510;
+  --border: #1e1b14;
+  --border-subtle: #141210;
+  --text: #ede8df;
+  --text-muted: #6b6358;
+  --text-faint: #2c2820;
+  --accent: #c8a96e;
+  --accent-dim: rgba(200, 169, 110, 0.1);
+  --accent-glow: rgba(200, 169, 110, 0.06);
+}
+
+/* ─── Design Tokens — Light ─────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg: #faf9f5;
+  --bg-surface: #f3f1ec;
+  --bg-card: #eceae4;
+  --bg-card-hover: #e6e3dc;
+  --border: #d4d0c6;
+  --border-subtle: #e0ddd5;
+  --text: #1c1a16;
+  --text-muted: #706a5c;
+  --text-faint: #b8b3a6;
+  --accent: #9a7230;
+  --accent-dim: rgba(154, 114, 48, 0.1);
+  --accent-glow: rgba(154, 114, 48, 0.06);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
+  --font-serif: var(--font-instrument-serif);
+  --font-sans: var(--font-dm-sans);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ─── Base Reset ───────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+}
+
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ─── Skip link (a11y) ─────────────────────────────────────────────────────── */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 1rem;
+  background: var(--accent);
+  color: #0a0806;
+  padding: 0.5rem 1rem;
+  border-radius: 0 0 8px 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  z-index: 10000;
+  text-decoration: none;
+  transition: top 0.2s;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* ─── prefers-reduced-motion ───────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-dm-sans), "DM Sans", system-ui, sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
+}
+
+/* ─── Grain overlay — atmosphere and depth ─────────────────────────────────── */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 160px;
+  opacity: 0.025;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* ─── Selection ────────────────────────────────────────────────────────────── */
+::selection {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+/* ─── Scrollbar ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ─── Focus styles ─────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ─── Typography utilities ─────────────────────────────────────────────────── */
+.font-serif {
+  font-family: var(--font-instrument-serif), Georgia, serif;
+}
+
+.font-mono {
+  font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+}
+
+.text-accent {
+  color: var(--accent);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+/* ─── Typography: prevent widows on headings ───────────────────────────────── */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* ─── touch-action on interactive elements ─────────────────────────────────── */
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+/* ─── font-variant-numeric for numbers ─────────────────────────────────────── */
+.font-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Section anchor scroll offset (accounts for fixed navbar) ─────────────── */
+section[id] {
+  scroll-margin-top: 64px;
+}
+
+/* ─── Section layout ───────────────────────────────────────────────────────── */
+.section-container {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+@media (min-width: 768px) {
+  .section-container {
+    padding: 0 3rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .section-container {
+    padding: 0 4rem;
+  }
+}
+
+/* ─── Animated underline ───────────────────────────────────────────────────── */
+.link-underline {
+  position: relative;
+  display: inline-block;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* ─── Section divider ──────────────────────────────────────────────────────── */
+.section-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--border) 20%,
+    var(--border) 80%,
+    transparent
+  );
+}
+
+/* ─── Card base ────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition:
+    border-color 0.3s ease,
+    background 0.3s ease;
+}
+.card:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(200, 169, 110, 0.2);
+}
+
+/* ─── Accent glow ──────────────────────────────────────────────────────────── */
+.accent-glow {
+  box-shadow: 0 0 40px var(--accent-glow);
+}
+
+/* ─── Badge ────────────────────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.75rem;
+  font-family: var(--font-jetbrains-mono), monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  background: var(--bg-surface);
+  white-space: nowrap;
+}
+
+.badge-accent {
+  border-color: rgba(200, 169, 110, 0.3);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+/* ─── Button base ──────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.4rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #0a0806;
+  border-color: var(--accent);
+}
+.btn-primary:hover {
+  background: #d4b87a;
+  box-shadow: 0 0 20px rgba(200, 169, 110, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border);
+}
+.btn-ghost:hover {
+  background: var(--bg-card);
+  border-color: var(--text-muted);
+  transform: translateY(-1px);
+}
+
+/* ─── Input ────────────────────────────────────────────────────────────────── */
+.input {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+  outline: none;
+}
+.input::placeholder {
+  color: var(--text-faint);
+}
+.input:focus {
+  border-color: var(--accent);
+  background: var(--bg-card-hover);
+}
+
+/* ─── Timeline connector ───────────────────────────────────────────────────── */
+.timeline-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+/* ─── Responsive: Experience card ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .exp-card-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  .exp-aside {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    flex-wrap: wrap !important;
+  }
+  .exp-aside-number {
+    display: none !important;
+  }
+}
+
+/* ─── Metric chip ──────────────────────────────────────────────────────────── */
+.metric-chip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.6rem 1rem;
+  background: var(--accent-dim);
+  border: 1px solid rgba(200, 169, 110, 0.18);
+  border-radius: 8px;
+  gap: 0.1rem;
+}
+.metric-value {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--accent);
+  line-height: 1.2;
+}
+.metric-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  max-width: 150px;
 }
