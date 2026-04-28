@@ -12,7 +12,7 @@ const NAV_LINKS = [
   { label: "Contact", href: "#contact" },
 ];
 
-const RESUME_URL = "https://drive.google.com/file/d/1Ma_pzcJgPHINl-Ny5WhgCGB27aybtss-/view";
+const RESUME_URL = "https://drive.google.com/file/d/1pElF2wDN4JvKV7oy5pXZeRsxBj_G79nq/view?usp=sharing";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
